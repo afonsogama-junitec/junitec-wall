@@ -1,0 +1,9 @@
+name: Validar cartões
+on:
+  pull_request:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: node scripts/build-index.mjs --check
