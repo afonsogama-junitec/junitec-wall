@@ -36,7 +36,8 @@
         <label>Cor
           <input type="color" name="color" value="#6c5ce7">
         </label>
-        <button type="submit">Adicionar ao mural</button>
+        <button type="submit">Adicionar ao meu mural</button>
+        <button type="button" id="publish" class="ghost">Publicar na sala (abre o GitHub)</button>
       </form>
 
       <h3>Pré-visualização</h3>
@@ -44,8 +45,12 @@
     </section>
 
     <section class="wall">
+      <h2>Mural da sala <small id="shared-count"></small></h2>
+      <p class="hint">Cartões publicados por PR no repositório. Para entrares aqui, usa o botão <strong>Publicar na sala</strong>.</p>
+      <div id="grid-shared"></div>
+
       <div class="wall-head">
-        <h2>Mural <small id="count"></small></h2>
+        <h2>O meu mural <small id="count"></small></h2>
         <div class="tools">
           <button type="button" id="export" class="ghost">Exportar</button>
           <label class="ghost file">Importar<input type="file" id="import" accept="application/json" hidden></label>

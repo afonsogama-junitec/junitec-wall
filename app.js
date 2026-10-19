@@ -3,6 +3,7 @@ const preview = document.getElementById('preview');
 const grid = document.getElementById('grid');
 const count = document.getElementById('count');
 const KEY = 'junitec-wall';
+const REPO = 'afonsogama-junitec/junitec-wall';
 
 let people = load();
 
@@ -154,5 +155,34 @@ function toggleEmojiPanel(open) {
 emojiBtn.addEventListener('click', () => toggleEmojiPanel(emojiPanel.hidden));
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') toggleEmojiPanel(false); });
 
+// Mural da sala: cartões vindos do repositório (people/index.json)
+async function loadShared() {
+  const box = document.getElementById('grid-shared');
+  const counter = document.getElementById('shared-count');
+  try {
+    const res = await fetch('people/index.json', { cache: 'no-cache' });
+    if (!res.ok) throw new Error(res.status);
+    const cards = await res.json();
+    box.replaceChildren(...cards.map((p) => cardEl(p)));
+    counter.textContent = `(${cards.length})`;
+  } catch {
+    box.textContent = 'O mural da sala só está disponível no site publicado.';
+    box.className = 'hint';
+  }
+}
+
+// Abre o GitHub com o ficheiro do teu cartão já preenchido (fluxo de fork + PR)
+function slugify(text) {
+  return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'cartao';
+}
+document.getElementById('publish').addEventListener('click', () => {
+  if (!form.reportValidity()) return;
+  const card = readForm();
+  const url = `https://github.com/${REPO}/new/main?filename=${encodeURIComponent(`people/${slugify(card.name)}.json`)}&value=${encodeURIComponent(JSON.stringify(card, null, 2) + '\n')}`;
+  window.open(url, '_blank', 'noopener');
+});
+
 renderPreview();
 renderWall();
+loadShared();

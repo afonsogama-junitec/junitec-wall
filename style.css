@@ -39,3 +39,7 @@ button:hover { background: #7d6ff0; }
 .emoji-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(36px, 1fr)); gap: 2px; }
 .emoji-grid button { background: transparent; padding: .25rem; font-size: 1.3rem; border-radius: 6px; }
 .emoji-grid button:hover { background: #26284a; }
+.hint { color: var(--muted); font-size: .85rem; margin: -.4rem 0 1rem; }
+#grid-shared { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+#grid-shared.hint { display: block; }
+form .ghost { width: 100%; }
