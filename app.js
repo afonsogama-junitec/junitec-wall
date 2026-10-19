@@ -117,8 +117,8 @@ document.getElementById('import').addEventListener('change', async (e) => {
 
 // Seletor de emojis
 const EMOJIS = {
-  'Caras': '😀 😁 😂 🤣 😊 😇 🙂 😉 😍 🥰 😘 😎 🤓 🥳 🤩 😏 🤔 🫡 😴 🤯 😱 🥶 🤠 🤖 👻 👽',
-  'Pessoas': '👋 👍 👏 🙌 💪 🧠 🫶 🙏 ✌️ 🤞 👀 🧑‍💻 🦸 🧙 🥷',
+  'Caras': '😀 😁 😂 🤣 😊 😇 🙂 😉 😍 🥰 😘 😎 🤓 🥳 🤩 😏 🤔 😴 🤯 😱 🥶 🤠 🤖 👻 👽',
+  'Pessoas': '👋 👍 👏 🙌 💪 🧠 🙏 ✌️ 🤞 👀 🧑‍💻 🦸 🧙 🥷',
   'Animais': '🐶 🐱 🦊 🐼 🐨 🦁 🐸 🐵 🐧 🦄 🐝 🦋 🐙 🦖 🐢 🐬',
   'Comida': '🍕 🍔 🍟 🌮 🍣 🍩 🍪 🍫 🍎 🍓 🥑 ☕ 🍺 🧋',
   'Atividades': '⚽ 🏀 🎮 🎧 🎸 🎨 🎬 🚀 ✈️ 🏄 🚴 🏆',
