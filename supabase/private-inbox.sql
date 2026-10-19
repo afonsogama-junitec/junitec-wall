@@ -16,7 +16,7 @@ create table if not exists private.admin (
 );
 alter table private.admin enable row level security;
 
--- Publicar: valida e limita (500 no total, 5 por pessoa).
+-- Publicar: valida e limita (500 no total, 50 por pessoa).
 create or replace function public.publish_card(
   p_owner uuid, p_name text, p_emoji text, p_tech text, p_fact text, p_color text
 ) returns public.cards
@@ -26,7 +26,7 @@ declare r public.cards;
 begin
   if p_owner is null then raise exception 'owner em falta'; end if;
   if (select count(*) from public.cards) >= 500 then raise exception 'mural cheio'; end if;
-  if (select count(*) from public.cards where owner = p_owner) >= 5 then
+  if (select count(*) from public.cards where owner = p_owner) >= 50 then
     raise exception 'limite de cartoes atingido';
   end if;
   insert into public.cards (owner, name, emoji, tech, fact, color)
