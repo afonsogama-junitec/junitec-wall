@@ -21,3 +21,7 @@ button:hover { background: #7d6ff0; }
 .card h4 { margin: 0; font-size: 1.15rem; }
 .card .tech { font-size: .8rem; background: rgba(255,255,255,.18); width: fit-content; padding: .15rem .6rem; border-radius: 99px; }
 .card p { margin: .3rem 0 0; font-size: .9rem; opacity: .92; }
+.card { position: relative; transition: transform .15s ease-out; }
+.del { position: absolute; top: .5rem; right: .5rem; width: 28px; height: 28px; padding: 0; background: rgba(0,0,0,.35); border-radius: 50%; opacity: 0; transition: opacity .15s; }
+.card:hover .del { opacity: 1; }
+.del:hover { background: #d63031; }
