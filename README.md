@@ -14,7 +14,7 @@ Também se pode enviar um cartão a alguém com **Copiar link do cartão**.
 ## Base de dados (Supabase)
 
 - `supabase/schema.sql`: tabela `cards` com limites de tamanho.
-- `supabase/private-inbox.sql`: tira o acesso direto ao público e cria três funções (`publish_card`, `my_cards`, `all_cards`). Máximo 500 cartões no total e 5 por pessoa.
+- `supabase/private-inbox.sql`: tira o acesso direto ao público e cria três funções (`publish_card`, `my_cards`, `all_cards`). Máximo 500 cartões no total e 50 por pessoa.
 - O código de admin vive em `private.admin` e **nunca** vai para o repositório.
 - A chave em `app.js` é a chave pública (publishable), pensada para ir para o browser.
 

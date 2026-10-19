@@ -200,7 +200,7 @@ publishBtn.addEventListener('click', async () => {
     p_owner: ownerId(), p_name: c.name, p_emoji: c.emoji, p_tech: c.tech, p_fact: c.fact, p_color: c.color,
   });
   let msg = 'Enviado! ✓';
-  if (error) msg = /limite/.test(error.message) ? 'Limite de 5 cartões atingido' : 'Erro ao enviar. Tenta outra vez';
+  if (error) msg = /limite/.test(error.message) ? 'Limite de 50 cartões atingido' : 'Erro ao enviar. Tenta outra vez';
   publishBtn.textContent = msg;
   if (!error) loadSent();
   setTimeout(() => { publishBtn.disabled = false; publishBtn.textContent = 'Enviar cartão'; }, 3000);
