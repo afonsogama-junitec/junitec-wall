@@ -27,7 +27,7 @@ for (const f of files) {
     name: str('name', 30, true),
     emoji: str('emoji', 8) || '🙂',
     tech: str('tech', 24),
-    fact: str('fact', 100),
+    fact: str('fact', 2500),
     color: typeof p.color === 'string' && /^#[0-9a-fA-F]{6}$/.test(p.color) ? p.color : '',
   };
   if (!card.color) { fail('"color" tem de ser um hex como #6c5ce7'); card.color = '#6c5ce7'; }

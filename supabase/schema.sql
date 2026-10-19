@@ -4,7 +4,7 @@ create table public.cards (
   name text not null check (char_length(name) between 1 and 30),
   emoji text not null default '🙂' check (char_length(emoji) between 1 and 8),
   tech text not null default '' check (char_length(tech) <= 24),
-  fact text not null default '' check (char_length(fact) <= 100),
+  fact text not null default '' check (char_length(fact) <= 2500),
   color text not null default '#6c5ce7' check (color ~ '^#[0-9a-fA-F]{6}$'),
   created_at timestamptz not null default now()
 );
