@@ -41,7 +41,7 @@ textarea { resize: vertical; }
 .emoji-grid button { background: transparent; padding: .25rem; font-size: 1.3rem; border-radius: 6px; }
 .emoji-grid button:hover { background: #26284a; }
 .hint { color: var(--muted); font-size: .85rem; margin: -.4rem 0 1rem; }
-#grid-sent, #grid-admin { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+#grid-sent, #grid-admin, #grid-room { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
 #grid-sent.hint { display: block; }
 form > .ghost { width: 100%; }
 form { grid-template-columns: minmax(0, 1fr); }
@@ -52,3 +52,7 @@ form { grid-template-columns: minmax(0, 1fr); }
 .admin { background: var(--panel); border: 1px dashed #6c5ce7; border-radius: 16px; padding: 1rem; margin-bottom: 1.5rem; }
 .admin form { display: flex; gap: .5rem; margin-bottom: .5rem; }
 .admin form input { flex: 1; min-width: 0; }
+.room { background: var(--panel); border: 1px dashed #00b894; border-radius: 16px; padding: 1rem; margin-bottom: 1.5rem; }
+.room .tools { margin-bottom: 1rem; }
+.room h2 { margin-bottom: .4rem; }
+.room .hint { margin-top: 0; }
