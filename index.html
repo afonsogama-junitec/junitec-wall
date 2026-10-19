@@ -19,9 +19,14 @@
         <label>Nome
           <input name="name" required maxlength="30" placeholder="Ex.: Afonso Gama">
         </label>
-        <label>Emoji
-          <input name="emoji" maxlength="2" value="😎">
-        </label>
+        <div class="field">
+          <span class="field-label">Emoji</span>
+          <div class="emoji-row">
+            <input name="emoji" maxlength="8" value="😎" aria-label="Emoji">
+            <button type="button" id="emoji-btn" class="ghost" aria-expanded="false" aria-controls="emoji-panel">Escolher</button>
+          </div>
+          <div id="emoji-panel" hidden></div>
+        </div>
         <label>Tecnologia favorita
           <input name="tech" maxlength="24" placeholder="Ex.: Python">
         </label>
