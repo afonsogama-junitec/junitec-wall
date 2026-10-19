@@ -183,6 +183,56 @@ document.getElementById('publish').addEventListener('click', () => {
   window.open(url, '_blank', 'noopener');
 });
 
+// Link de partilha: o cartão vai no endereço (#cartao=...), nada é enviado a servidores
+function encodeCard(card) {
+  const bytes = new TextEncoder().encode(JSON.stringify(card));
+  return btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+function decodeCard(text) {
+  const b64 = text.replace(/-/g, '+').replace(/_/g, '/');
+  const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+  const p = JSON.parse(new TextDecoder().decode(bytes));
+  if (!p || typeof p.name !== 'string') throw new Error('cartão inválido');
+  return {
+    name: String(p.name).slice(0, 30),
+    emoji: String(p.emoji || '🙂').slice(0, 8),
+    tech: String(p.tech || '').slice(0, 24),
+    fact: String(p.fact || '').slice(0, 100),
+    color: /^#[0-9a-f]{6}$/i.test(p.color) ? p.color : '#6c5ce7',
+  };
+}
+
+const shareBtn = document.getElementById('share');
+shareBtn.addEventListener('click', async () => {
+  if (!form.reportValidity()) return;
+  const url = `${location.origin}${location.pathname}#cartao=${encodeCard(readForm())}`;
+  try {
+    await navigator.clipboard.writeText(url);
+    shareBtn.textContent = 'Link copiado!';
+  } catch {
+    prompt('Copia este link:', url);
+  }
+  setTimeout(() => { shareBtn.textContent = 'Copiar link do cartão'; }, 2000);
+});
+
+function showIncoming() {
+  const m = location.hash.match(/^#cartao=([A-Za-z0-9_-]+)$/);
+  if (!m) return;
+  try {
+    const card = decodeCard(m[1]);
+    document.getElementById('incoming-card').replaceChildren(cardEl(card));
+    document.getElementById('incoming').hidden = false;
+    document.getElementById('incoming-add').onclick = () => {
+      people.unshift(card);
+      save();
+      renderWall();
+      document.getElementById('incoming').hidden = true;
+      history.replaceState(null, '', location.pathname);
+    };
+  } catch {}
+}
+
 renderPreview();
 renderWall();
 loadShared();
+showIncoming();
