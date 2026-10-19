@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JUNITEC Wall</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>JUNITEC <span>Wall</span></h1>
+    <p>O mural da nossa sala. Cria o cartão de cada pessoa.</p>
+  </header>
+
+  <main>
+    <section class="editor">
+      <h2>Novo cartão</h2>
+      <form id="form">
+        <label>Nome
+          <input name="name" required maxlength="30" placeholder="Ex.: Afonso Gama">
+        </label>
+        <label>Emoji
+          <input name="emoji" maxlength="2" value="😎">
+        </label>
+        <label>Tecnologia favorita
+          <input name="tech" maxlength="24" placeholder="Ex.: Python">
+        </label>
+        <label>Fun fact
+          <textarea name="fact" maxlength="100" rows="3" placeholder="Algo que ninguém sabe sobre ti"></textarea>
+        </label>
+        <label>Cor
+          <input type="color" name="color" value="#6c5ce7">
+        </label>
+        <button type="submit">Adicionar ao mural</button>
+      </form>
+
+      <h3>Pré-visualização</h3>
+      <div id="preview"></div>
+    </section>
+
+    <section class="wall">
+      <h2>Mural <small id="count"></small></h2>
+      <div id="grid"></div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
