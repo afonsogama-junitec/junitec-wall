@@ -3,7 +3,6 @@ const preview = document.getElementById('preview');
 const grid = document.getElementById('grid');
 const count = document.getElementById('count');
 const KEY = 'junitec-wall';
-const REPO = 'afonsogama-junitec/junitec-wall';
 
 let people = load();
 
@@ -155,32 +154,66 @@ function toggleEmojiPanel(open) {
 emojiBtn.addEventListener('click', () => toggleEmojiPanel(emojiPanel.hidden));
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') toggleEmojiPanel(false); });
 
-// Mural da sala: cartões vindos do repositório (people/index.json)
+// Mural da sala: base de dados Supabase (tempo real) + cartões do repositório (people/index.json)
+const SUPABASE_URL = 'https://tqdsvqovnysqqyzaawkq.supabase.co';
+// Chave pública: é segura no browser porque a tabela só deixa ler e publicar (RLS)
+const SUPABASE_KEY = 'sb_publishable_rdge_JlUTH995nYSWUDgDA_Syd37XTt';
+const sharedBox = document.getElementById('grid-shared');
+const sharedCount = document.getElementById('shared-count');
+let live = [];
+let fromRepo = [];
+let db = null;
+
+function renderShared() {
+  const all = [...live, ...fromRepo];
+  sharedBox.className = '';
+  sharedBox.replaceChildren(...all.map((p) => cardEl(p)));
+  sharedCount.textContent = all.length ? `(${all.length})` : '';
+}
+
+function addLive(row) {
+  if (live.some((c) => c.id === row.id)) return;
+  live.unshift(row);
+  renderShared();
+}
+
 async function loadShared() {
-  const box = document.getElementById('grid-shared');
-  const counter = document.getElementById('shared-count');
   try {
     const res = await fetch('people/index.json', { cache: 'no-cache' });
-    if (!res.ok) throw new Error(res.status);
-    const cards = await res.json();
-    box.replaceChildren(...cards.map((p) => cardEl(p)));
-    counter.textContent = `(${cards.length})`;
+    if (res.ok) fromRepo = await res.json();
+  } catch {}
+  try {
+    db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const { data, error } = await db.from('cards').select('*').order('created_at', { ascending: false }).limit(200);
+    if (error) throw error;
+    live = data;
+    db.channel('cards-live')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'cards' }, ({ new: row }) => addLive(row))
+      .subscribe();
   } catch {
-    box.textContent = 'O mural da sala só está disponível no site publicado.';
-    box.className = 'hint';
+    db = null;
+  }
+  renderShared();
+  if (!db && !fromRepo.length) {
+    sharedBox.textContent = 'Não foi possível ligar ao mural da sala.';
+    sharedBox.className = 'hint';
   }
 }
 
-// Abre o GitHub com o ficheiro do teu cartão já preenchido (fluxo de fork + PR)
-function slugify(text) {
-  return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'cartao';
-}
-document.getElementById('publish').addEventListener('click', () => {
+// Publicar na sala: grava na base de dados e aparece logo a toda a gente
+const publishBtn = document.getElementById('publish');
+publishBtn.addEventListener('click', async () => {
   if (!form.reportValidity()) return;
-  const card = readForm();
-  const url = `https://github.com/${REPO}/new/main?filename=${encodeURIComponent(`people/${slugify(card.name)}.json`)}&value=${encodeURIComponent(JSON.stringify(card, null, 2) + '\n')}`;
-  window.open(url, '_blank', 'noopener');
+  if (!db) { publishBtn.textContent = 'Sem ligação ao mural'; return; }
+  publishBtn.disabled = true;
+  publishBtn.textContent = 'A publicar…';
+  const { data, error } = await db.from('cards').insert(readForm()).select().single();
+  if (!error) addLive(data);
+  publishBtn.textContent = error ? 'Erro ao publicar. Tenta outra vez' : 'Publicado na sala! ✓';
+  setTimeout(() => {
+    publishBtn.disabled = false;
+    publishBtn.textContent = 'Publicar na sala';
+  }, error ? 2000 : 4000);
 });
 
 // Link de partilha: o cartão vai no endereço (#cartao=...), nada é enviado a servidores

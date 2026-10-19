@@ -38,7 +38,7 @@
         </label>
         <button type="submit">Adicionar ao meu mural</button>
         <button type="button" id="share" class="ghost">Copiar link do cartão</button>
-        <button type="button" id="publish" class="ghost">Publicar na sala (abre o GitHub)</button>
+        <button type="button" id="publish" class="ghost">Publicar na sala</button>
       </form>
 
       <h3>Pré-visualização</h3>
@@ -53,7 +53,7 @@
       </div>
 
       <h2>Mural da sala <small id="shared-count"></small></h2>
-      <p class="hint">Cartões publicados por PR no repositório. Para entrares aqui, usa o botão <strong>Publicar na sala</strong>.</p>
+      <p class="hint">Cartões publicados por toda a gente, em tempo real. Usa o botão <strong>Publicar na sala</strong> para entrares aqui.</p>
       <div id="grid-shared"></div>
 
       <div class="wall-head">
@@ -67,6 +67,7 @@
     </section>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="app.js"></script>
 </body>
 </html>
