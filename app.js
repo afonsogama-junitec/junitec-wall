@@ -102,7 +102,7 @@ document.getElementById('import').addEventListener('change', async (e) => {
       name: String(p.name).slice(0, 30),
       emoji: String(p.emoji || '🙂').slice(0, 8),
       tech: String(p.tech || '').slice(0, 24),
-      fact: String(p.fact || '').slice(0, 100),
+      fact: String(p.fact || '').slice(0, 2500),
       color: /^#[0-9a-f]{6}$/i.test(p.color) ? p.color : '#6c5ce7',
     }));
     people = [...valid, ...people];
@@ -242,7 +242,7 @@ function decodeCard(text) {
     name: String(p.name).slice(0, 30),
     emoji: String(p.emoji || '🙂').slice(0, 8),
     tech: String(p.tech || '').slice(0, 24),
-    fact: String(p.fact || '').slice(0, 100),
+    fact: String(p.fact || '').slice(0, 2500),
     color: /^#[0-9a-f]{6}$/i.test(p.color) ? p.color : '#6c5ce7',
   };
 }
