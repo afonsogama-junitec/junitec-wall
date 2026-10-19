@@ -36,9 +36,9 @@
         <label>Cor
           <input type="color" name="color" value="#6c5ce7">
         </label>
-        <button type="submit">Adicionar ao meu mural</button>
+        <button type="button" id="publish">Enviar cartão</button>
+        <button type="submit" class="ghost">Guardar só no meu browser</button>
         <button type="button" id="share" class="ghost">Copiar link do cartão</button>
-        <button type="button" id="publish" class="ghost">Publicar na sala</button>
       </form>
 
       <h3>Pré-visualização</h3>
@@ -52,9 +52,19 @@
         <button type="button" id="incoming-add">Juntar ao meu mural</button>
       </div>
 
-      <h2>Mural da sala <small id="shared-count"></small></h2>
-      <p class="hint">Cartões publicados por toda a gente, em tempo real. Usa o botão <strong>Publicar na sala</strong> para entrares aqui.</p>
-      <div id="grid-shared"></div>
+      <div id="admin" class="admin" hidden>
+        <h2>Todos os cartões <small id="admin-count"></small></h2>
+        <form id="admin-form">
+          <input type="password" id="admin-code" placeholder="Código de admin" autocomplete="off" required>
+          <button type="submit">Ver tudo</button>
+        </form>
+        <p class="hint" id="admin-msg"></p>
+        <div id="grid-admin"></div>
+      </div>
+
+      <h2>Cartões enviados por ti <small id="sent-count"></small></h2>
+      <p class="hint">Privado: só tu (neste browser) e o organizador veem os cartões que enviaste.</p>
+      <div id="grid-sent"></div>
 
       <div class="wall-head">
         <h2>O meu mural <small id="count"></small></h2>

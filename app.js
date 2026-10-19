@@ -154,67 +154,79 @@ function toggleEmojiPanel(open) {
 emojiBtn.addEventListener('click', () => toggleEmojiPanel(emojiPanel.hidden));
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') toggleEmojiPanel(false); });
 
-// Mural da sala: base de dados Supabase (tempo real) + cartões do repositório (people/index.json)
+// Caixa de entrada privada: cada pessoa só vê o que enviou; o admin (com código) vê tudo.
 const SUPABASE_URL = 'https://tqdsvqovnysqqyzaawkq.supabase.co';
-// Chave pública: é segura no browser porque a tabela só deixa ler e publicar (RLS)
+// Chave pública: a tabela não é acessível diretamente, só por funções com regras próprias
 const SUPABASE_KEY = 'sb_publishable_rdge_JlUTH995nYSWUDgDA_Syd37XTt';
-const sharedBox = document.getElementById('grid-shared');
-const sharedCount = document.getElementById('shared-count');
-let live = [];
-let fromRepo = [];
+const OWNER_KEY = 'junitec-owner';
+const sentBox = document.getElementById('grid-sent');
+const sentCount = document.getElementById('sent-count');
 let db = null;
+try { db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch {}
 
-function renderShared() {
-  const all = [...live, ...fromRepo];
-  sharedBox.className = '';
-  sharedBox.replaceChildren(...all.map((p) => cardEl(p)));
-  sharedCount.textContent = all.length ? `(${all.length})` : '';
-}
-
-function addLive(row) {
-  if (live.some((c) => c.id === row.id)) return;
-  live.unshift(row);
-  renderShared();
-}
-
-async function loadShared() {
+// Identificador aleatório deste browser (não é uma conta)
+let memoryOwner = null;
+function ownerId() {
   try {
-    const res = await fetch('people/index.json', { cache: 'no-cache' });
-    if (res.ok) fromRepo = await res.json();
-  } catch {}
-  try {
-    db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    const { data, error } = await db.from('cards').select('*').order('created_at', { ascending: false }).limit(200);
-    if (error) throw error;
-    live = data;
-    db.channel('cards-live')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'cards' }, ({ new: row }) => addLive(row))
-      .subscribe();
+    let id = localStorage.getItem(OWNER_KEY);
+    if (!id) { id = crypto.randomUUID(); localStorage.setItem(OWNER_KEY, id); }
+    return id;
   } catch {
-    db = null;
-  }
-  renderShared();
-  if (!db && !fromRepo.length) {
-    sharedBox.textContent = 'Não foi possível ligar ao mural da sala.';
-    sharedBox.className = 'hint';
+    memoryOwner = memoryOwner || crypto.randomUUID();
+    return memoryOwner;
   }
 }
 
-// Publicar na sala: grava na base de dados e aparece logo a toda a gente
+function renderGrid(box, counter, cards) {
+  box.className = '';
+  box.replaceChildren(...cards.map((p) => cardEl(p)));
+  counter.textContent = cards.length ? `(${cards.length})` : '';
+}
+
+async function loadSent() {
+  if (!db) return;
+  const { data, error } = await db.rpc('my_cards', { p_owner: ownerId() });
+  if (!error) renderGrid(sentBox, sentCount, data);
+}
+
 const publishBtn = document.getElementById('publish');
 publishBtn.addEventListener('click', async () => {
   if (!form.reportValidity()) return;
-  if (!db) { publishBtn.textContent = 'Sem ligação ao mural'; return; }
+  if (!db) { publishBtn.textContent = 'Sem ligação'; return; }
+  const c = readForm();
   publishBtn.disabled = true;
-  publishBtn.textContent = 'A publicar…';
-  const { data, error } = await db.from('cards').insert(readForm()).select().single();
-  if (!error) addLive(data);
-  publishBtn.textContent = error ? 'Erro ao publicar. Tenta outra vez' : 'Publicado na sala! ✓';
-  setTimeout(() => {
-    publishBtn.disabled = false;
-    publishBtn.textContent = 'Publicar na sala';
-  }, error ? 2000 : 4000);
+  publishBtn.textContent = 'A enviar…';
+  const { error } = await db.rpc('publish_card', {
+    p_owner: ownerId(), p_name: c.name, p_emoji: c.emoji, p_tech: c.tech, p_fact: c.fact, p_color: c.color,
+  });
+  let msg = 'Enviado! ✓';
+  if (error) msg = /limite/.test(error.message) ? 'Limite de 5 cartões atingido' : 'Erro ao enviar. Tenta outra vez';
+  publishBtn.textContent = msg;
+  if (!error) loadSent();
+  setTimeout(() => { publishBtn.disabled = false; publishBtn.textContent = 'Enviar cartão'; }, 3000);
 });
+
+// Painel de admin: abre com /#admin. O código fica só em memória.
+const adminBox = document.getElementById('admin');
+let adminTimer = null;
+async function loadAdmin(code) {
+  const { data, error } = await db.rpc('all_cards', { p_code: code });
+  if (error) return false;
+  renderGrid(document.getElementById('grid-admin'), document.getElementById('admin-count'), data);
+  return true;
+}
+document.getElementById('admin-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const input = document.getElementById('admin-code');
+  const msg = document.getElementById('admin-msg');
+  const code = input.value;
+  clearInterval(adminTimer);
+  if (!db || !(await loadAdmin(code))) { msg.textContent = 'Código inválido.'; return; }
+  msg.textContent = 'A atualizar de 5 em 5 segundos.';
+  input.value = '';
+  adminTimer = setInterval(() => loadAdmin(code), 5000);
+});
+if (location.hash === '#admin') adminBox.hidden = false;
 
 // Link de partilha: o cartão vai no endereço (#cartao=...), nada é enviado a servidores
 function encodeCard(card) {
@@ -267,5 +279,5 @@ function showIncoming() {
 
 renderPreview();
 renderWall();
-loadShared();
+loadSent();
 showIncoming();
