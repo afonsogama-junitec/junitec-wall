@@ -6,11 +6,13 @@ Site: https://afonsogama-junitec.github.io/junitec-wall/
 ## Entrar no mural da sala
 
 1. Abre o site e preenche o teu cartão.
-2. Carrega em **Publicar na sala (abre o GitHub)**.
-3. No GitHub, inicia sessão e carrega em **Propose changes** e depois **Create pull request**.
-4. Espera pela validação automática (visto verde) e pelo merge. O teu cartão aparece no site em cerca de um minuto.
+2. Carrega em **Publicar na sala**. O cartão aparece logo para toda a gente, sem refresh.
 
-Ou faz à mão: faz fork, cria `people/o-teu-nome.json` e abre um PR.
+Também podes enviar o teu cartão a alguém com **Copiar link do cartão**.
+
+### Alternativa pelo GitHub (PR)
+
+Faz fork, cria `people/o-teu-nome.json` e abre um PR. Depois do merge o cartão fica no mural.
 
 ```json
 {
@@ -22,7 +24,13 @@ Ou faz à mão: faz fork, cria `people/o-teu-nome.json` e abre um PR.
 }
 ```
 
-Limites: nome 30 caracteres, tecnologia 24, fun fact 100. O nome do ficheiro só leva `a-z`, `0-9` e hífens.
+Limites: nome 30 caracteres, tecnologia 24, fun fact 100.
+
+## Base de dados
+
+O mural ao vivo usa o Supabase. A tabela e as regras de segurança estão em `supabase/schema.sql`:
+o público só pode **ler** e **publicar** (máximo 500 cartões), nunca editar nem apagar.
+A chave que está em `app.js` é a chave pública (publishable), pensada para ir para o browser.
 
 ## Desenvolvimento
 
