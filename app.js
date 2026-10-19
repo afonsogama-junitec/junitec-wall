@@ -83,5 +83,36 @@ form.addEventListener('submit', (e) => {
   renderPreview();
 });
 
+document.getElementById('export').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(people, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'junitec-wall.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+document.getElementById('import').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  try {
+    const data = JSON.parse(await file.text());
+    if (!Array.isArray(data)) throw new Error('formato inválido');
+    const valid = data.filter((p) => p && typeof p.name === 'string').map((p) => ({
+      name: String(p.name).slice(0, 30),
+      emoji: String(p.emoji || '🙂').slice(0, 2),
+      tech: String(p.tech || '').slice(0, 24),
+      fact: String(p.fact || '').slice(0, 100),
+      color: /^#[0-9a-f]{6}$/i.test(p.color) ? p.color : '#6c5ce7',
+    }));
+    people = [...valid, ...people];
+    save();
+    renderWall();
+  } catch {
+    alert('Ficheiro inválido.');
+  }
+  e.target.value = '';
+});
+
 renderPreview();
 renderWall();
