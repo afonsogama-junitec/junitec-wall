@@ -30,3 +30,12 @@ button:hover { background: #7d6ff0; }
 .tools { display: flex; gap: .5rem; }
 .ghost { background: transparent; border: 1px solid #33355c; color: var(--text); padding: .45rem .9rem; border-radius: 8px; font-size: .85rem; cursor: pointer; }
 .ghost:hover { background: #1a1b33; }
+.field { display: grid; gap: .3rem; }
+.field-label { font-size: .85rem; color: var(--muted); }
+.emoji-row { display: flex; gap: .5rem; }
+.emoji-row input { flex: 1; min-width: 0; font-size: 1.2rem; }
+#emoji-panel { max-height: 220px; overflow-y: auto; background: #0f1020; border: 1px solid #33355c; border-radius: 8px; padding: .5rem; }
+#emoji-panel h5 { margin: .4rem 0 .2rem; font-size: .75rem; color: var(--muted); font-weight: 600; }
+.emoji-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(36px, 1fr)); gap: 2px; }
+.emoji-grid button { background: transparent; padding: .25rem; font-size: 1.3rem; border-radius: 6px; }
+.emoji-grid button:hover { background: #26284a; }

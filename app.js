@@ -100,7 +100,7 @@ document.getElementById('import').addEventListener('change', async (e) => {
     if (!Array.isArray(data)) throw new Error('formato inválido');
     const valid = data.filter((p) => p && typeof p.name === 'string').map((p) => ({
       name: String(p.name).slice(0, 30),
-      emoji: String(p.emoji || '🙂').slice(0, 2),
+      emoji: String(p.emoji || '🙂').slice(0, 8),
       tech: String(p.tech || '').slice(0, 24),
       fact: String(p.fact || '').slice(0, 100),
       color: /^#[0-9a-f]{6}$/i.test(p.color) ? p.color : '#6c5ce7',
@@ -113,6 +113,46 @@ document.getElementById('import').addEventListener('change', async (e) => {
   }
   e.target.value = '';
 });
+
+// Seletor de emojis
+const EMOJIS = {
+  'Caras': '😀 😁 😂 🤣 😊 😇 🙂 😉 😍 🥰 😘 😎 🤓 🥳 🤩 😏 🤔 🫡 😴 🤯 😱 🥶 🤠 🤖 👻 👽',
+  'Pessoas': '👋 👍 👏 🙌 💪 🧠 🫶 🙏 ✌️ 🤞 👀 🧑‍💻 🦸 🧙 🥷',
+  'Animais': '🐶 🐱 🦊 🐼 🐨 🦁 🐸 🐵 🐧 🦄 🐝 🦋 🐙 🦖 🐢 🐬',
+  'Comida': '🍕 🍔 🍟 🌮 🍣 🍩 🍪 🍫 🍎 🍓 🥑 ☕ 🍺 🧋',
+  'Atividades': '⚽ 🏀 🎮 🎧 🎸 🎨 🎬 🚀 ✈️ 🏄 🚴 🏆',
+  'Símbolos': '⭐ 🔥 💡 💻 ⌨️ 🖥️ 🐛 ⚡ 🌈 ❤️ 💜 💯 ✅ 🎉',
+};
+const emojiInput = form.elements.emoji;
+const emojiBtn = document.getElementById('emoji-btn');
+const emojiPanel = document.getElementById('emoji-panel');
+
+for (const [title, list] of Object.entries(EMOJIS)) {
+  const h = document.createElement('h5');
+  h.textContent = title;
+  const row = document.createElement('div');
+  row.className = 'emoji-grid';
+  for (const e of list.split(' ')) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = e;
+    b.setAttribute('aria-label', e);
+    b.addEventListener('click', () => {
+      emojiInput.value = e;
+      emojiInput.dispatchEvent(new Event('input', { bubbles: true }));
+      toggleEmojiPanel(false);
+    });
+    row.append(b);
+  }
+  emojiPanel.append(h, row);
+}
+
+function toggleEmojiPanel(open) {
+  emojiPanel.hidden = !open;
+  emojiBtn.setAttribute('aria-expanded', String(open));
+}
+emojiBtn.addEventListener('click', () => toggleEmojiPanel(emojiPanel.hidden));
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') toggleEmojiPanel(false); });
 
 renderPreview();
 renderWall();
