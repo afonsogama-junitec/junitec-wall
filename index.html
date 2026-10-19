@@ -39,7 +39,13 @@
     </section>
 
     <section class="wall">
-      <h2>Mural <small id="count"></small></h2>
+      <div class="wall-head">
+        <h2>Mural <small id="count"></small></h2>
+        <div class="tools">
+          <button type="button" id="export" class="ghost">Exportar</button>
+          <label class="ghost file">Importar<input type="file" id="import" accept="application/json" hidden></label>
+        </div>
+      </div>
       <div id="grid"></div>
     </section>
   </main>

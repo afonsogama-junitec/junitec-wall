@@ -25,3 +25,8 @@ button:hover { background: #7d6ff0; }
 .del { position: absolute; top: .5rem; right: .5rem; width: 28px; height: 28px; padding: 0; background: rgba(0,0,0,.35); border-radius: 50%; opacity: 0; transition: opacity .15s; }
 .card:hover .del { opacity: 1; }
 .del:hover { background: #d63031; }
+.wall-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem; }
+.wall-head h2 { margin: 0; }
+.tools { display: flex; gap: .5rem; }
+.ghost { background: transparent; border: 1px solid #33355c; color: var(--text); padding: .45rem .9rem; border-radius: 8px; font-size: .85rem; cursor: pointer; }
+.ghost:hover { background: #1a1b33; }
