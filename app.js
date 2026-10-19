@@ -186,25 +186,91 @@ function renderGrid(box, counter, cards) {
 async function loadSent() {
   if (!db) return;
   const { data, error } = await db.rpc('my_cards', { p_owner: ownerId() });
-  if (!error) renderGrid(sentBox, sentCount, data);
+  if (!error) renderGrid(sentBox, sentCount, data.filter((c) => !c.room));
 }
 
-const publishBtn = document.getElementById('publish');
-publishBtn.addEventListener('click', async () => {
+// Sala partilhada: um código aleatório no link; quem o tiver vê e escreve na sala
+const ROOM_KEY = 'junitec-room';
+const ROOM_RE = /^[A-Za-z0-9_-]{8,40}$/;
+const roomBox = document.getElementById('grid-room');
+const roomCount = document.getElementById('room-count');
+const roomHint = document.getElementById('room-hint');
+const publishRoomBtn = document.getElementById('publish-room');
+let room = null;
+let roomTimer = null;
+try { const r = localStorage.getItem(ROOM_KEY); if (ROOM_RE.test(r || '')) room = r; } catch {}
+
+function newRoomCode() {
+  // 32 símbolos sem l, o, 0, 1 (sem enviesamento: 256 é múltiplo de 32)
+  const alphabet = 'abcdefghijkmnpqrstuvwxyz23456789';
+  return Array.from(crypto.getRandomValues(new Uint8Array(16)), (x) => alphabet[x % 32]).join('');
+}
+
+async function loadRoom() {
+  if (!db || !room) return;
+  const { data, error } = await db.rpc('room_cards', { p_room: room });
+  if (!error) renderGrid(roomBox, roomCount, data);
+}
+
+function setRoom(code) {
+  room = code;
+  try { code ? localStorage.setItem(ROOM_KEY, code) : localStorage.removeItem(ROOM_KEY); } catch {}
+  renderRoom();
+}
+
+function renderRoom() {
+  clearInterval(roomTimer);
+  document.getElementById('room-create').hidden = !!room;
+  document.getElementById('room-active').hidden = !room;
+  publishRoomBtn.hidden = !room;
+  if (!room) {
+    roomCount.textContent = '';
+    roomBox.replaceChildren();
+    return;
+  }
+  loadRoom();
+  roomTimer = setInterval(loadRoom, 5000);
+}
+
+document.getElementById('room-create').addEventListener('click', () => setRoom(newRoomCode()));
+document.getElementById('room-leave').addEventListener('click', () => setRoom(null));
+document.getElementById('room-copy').addEventListener('click', async () => {
+  const url = `${location.origin}${location.pathname}#sala=${room}`;
+  try {
+    await navigator.clipboard.writeText(url);
+    roomHint.textContent = 'Link da sala copiado! Manda-o só a quem queres na sala: quem o tiver vê tudo.';
+  } catch {
+    roomHint.textContent = `Copia este link: ${url}`;
+  }
+});
+
+const joined = location.hash.match(/^#sala=([A-Za-z0-9_-]{8,40})$/);
+if (joined) {
+  room = joined[1];
+  try { localStorage.setItem(ROOM_KEY, room); } catch {}
+  history.replaceState(null, '', location.pathname);
+  roomHint.textContent = 'Entraste na sala! Os cartões enviados para a sala aparecem aqui.';
+}
+
+// Enviar: em privado (só tu e o organizador) ou para a sala
+async function sendCard(btn, label, roomCode) {
   if (!form.reportValidity()) return;
-  if (!db) { publishBtn.textContent = 'Sem ligação'; return; }
+  if (!db) { btn.textContent = 'Sem ligação'; return; }
   const c = readForm();
-  publishBtn.disabled = true;
-  publishBtn.textContent = 'A enviar…';
+  btn.disabled = true;
+  btn.textContent = 'A enviar…';
   const { error } = await db.rpc('publish_card', {
-    p_owner: ownerId(), p_name: c.name, p_emoji: c.emoji, p_tech: c.tech, p_fact: c.fact, p_color: c.color,
+    p_owner: ownerId(), p_name: c.name, p_emoji: c.emoji, p_tech: c.tech, p_fact: c.fact, p_color: c.color, p_room: roomCode,
   });
   let msg = 'Enviado! ✓';
   if (error) msg = /limite/.test(error.message) ? 'Limite de 50 cartões atingido' : 'Erro ao enviar. Tenta outra vez';
-  publishBtn.textContent = msg;
-  if (!error) loadSent();
-  setTimeout(() => { publishBtn.disabled = false; publishBtn.textContent = 'Enviar cartão'; }, 3000);
-});
+  btn.textContent = msg;
+  if (!error) { loadSent(); loadRoom(); }
+  setTimeout(() => { btn.disabled = false; btn.textContent = label; }, 3000);
+}
+const publishBtn = document.getElementById('publish');
+publishBtn.addEventListener('click', () => sendCard(publishBtn, 'Enviar cartão', null));
+publishRoomBtn.addEventListener('click', () => sendCard(publishRoomBtn, 'Enviar para a sala', room));
 
 // Painel de admin: abre com /#admin. O código fica só em memória.
 const adminBox = document.getElementById('admin');
@@ -280,4 +346,5 @@ function showIncoming() {
 renderPreview();
 renderWall();
 loadSent();
+renderRoom();
 showIncoming();

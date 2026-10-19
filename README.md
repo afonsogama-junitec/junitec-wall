@@ -9,12 +9,17 @@ Site: https://afonsogama-junitec.github.io/junitec-wall/
 2. Os cartões enviados são **privados**: cada pessoa só vê os seus (identificados por um código aleatório guardado no browser).
 3. O organizador abre `/#admin`, mete o código de admin e vê **todos** os cartões, atualizados de 5 em 5 segundos.
 
+### Sala partilhada
+
+**Criar sala** gera um código aleatório e um link (`/#sala=...`). Quem abrir o link entra na sala e todos veem e escrevem os cartões da sala com **Enviar para a sala**. Quem não tiver o link não vê nada.
+
 Também se pode enviar um cartão a alguém com **Copiar link do cartão**.
 
 ## Base de dados (Supabase)
 
 - `supabase/schema.sql`: tabela `cards` com limites de tamanho.
 - `supabase/private-inbox.sql`: tira o acesso direto ao público e cria três funções (`publish_card`, `my_cards`, `all_cards`). Máximo 500 cartões no total e 50 por pessoa.
+- `supabase/rooms.sql`: salas partilhadas (`room_cards` e `publish_card` com sala). A resposta da sala nunca inclui o identificador do autor.
 - O código de admin vive em `private.admin` e **nunca** vai para o repositório.
 - A chave em `app.js` é a chave pública (publishable), pensada para ir para o browser.
 

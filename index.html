@@ -36,6 +36,7 @@
         <label>Cor
           <input type="color" name="color" value="#6c5ce7">
         </label>
+        <button type="button" id="publish-room" hidden>Enviar para a sala</button>
         <button type="button" id="publish">Enviar cartão</button>
         <button type="submit" class="ghost">Guardar só no meu browser</button>
         <button type="button" id="share" class="ghost">Copiar link do cartão</button>
@@ -60,6 +61,19 @@
         </form>
         <p class="hint" id="admin-msg"></p>
         <div id="grid-admin"></div>
+      </div>
+
+      <div id="room" class="room">
+        <h2>Sala partilhada <small id="room-count"></small></h2>
+        <p class="hint" id="room-hint">Cria uma sala e manda o link a quem quiseres. Só quem tiver o link vê e escreve os cartões da sala.</p>
+        <button type="button" id="room-create">Criar sala</button>
+        <div id="room-active" hidden>
+          <div class="tools">
+            <button type="button" id="room-copy" class="ghost">Copiar link da sala</button>
+            <button type="button" id="room-leave" class="ghost">Sair da sala</button>
+          </div>
+          <div id="grid-room"></div>
+        </div>
       </div>
 
       <h2>Cartões enviados por ti <small id="sent-count"></small></h2>
