@@ -196,6 +196,8 @@ const roomBox = document.getElementById('grid-room');
 const roomCount = document.getElementById('room-count');
 const roomHint = document.getElementById('room-hint');
 const publishRoomBtn = document.getElementById('publish-room');
+const HINT_NO_ROOM = 'Cria uma sala e manda o link a quem quiseres. Só quem tiver o link vê e escreve os cartões da sala.';
+const HINT_IN_ROOM = 'Estás numa sala. Só quem tiver o link da sala vê e escreve aqui.';
 let room = null;
 let roomTimer = null;
 try { const r = localStorage.getItem(ROOM_KEY); if (ROOM_RE.test(r || '')) room = r; } catch {}
@@ -223,6 +225,7 @@ function renderRoom() {
   document.getElementById('room-create').hidden = !!room;
   document.getElementById('room-active').hidden = !room;
   publishRoomBtn.hidden = !room;
+  roomHint.textContent = room ? HINT_IN_ROOM : HINT_NO_ROOM;
   if (!room) {
     roomCount.textContent = '';
     roomBox.replaceChildren();
@@ -239,6 +242,7 @@ document.getElementById('room-copy').addEventListener('click', async () => {
   try {
     await navigator.clipboard.writeText(url);
     roomHint.textContent = 'Link da sala copiado! Manda-o só a quem queres na sala: quem o tiver vê tudo.';
+    setTimeout(() => { if (room) roomHint.textContent = HINT_IN_ROOM; }, 6000);
   } catch {
     roomHint.textContent = `Copia este link: ${url}`;
   }
@@ -249,7 +253,6 @@ if (joined) {
   room = joined[1];
   try { localStorage.setItem(ROOM_KEY, room); } catch {}
   history.replaceState(null, '', location.pathname);
-  roomHint.textContent = 'Entraste na sala! Os cartões enviados para a sala aparecem aqui.';
 }
 
 // Enviar: em privado (só tu e o organizador) ou para a sala
@@ -347,4 +350,5 @@ renderPreview();
 renderWall();
 loadSent();
 renderRoom();
+if (joined) roomHint.textContent = 'Entraste na sala! Os cartões enviados para a sala aparecem aqui.';
 showIncoming();
